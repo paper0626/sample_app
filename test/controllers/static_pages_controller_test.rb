@@ -1,6 +1,11 @@
 require 'test_helper'
 
 class StaticPagesControllerTest < ActionDispatch::IntegrationTest
+  test "should get root" do
+    get root_url
+    assert_response :success
+  end
+  
   test "should get home" do
     # Homeページのテスト。GETリクエストをhomeアクションに対して発行 (=送信) せよ。
     # そうすれば、リクエストに対するレスポンスは[成功]になるはず
