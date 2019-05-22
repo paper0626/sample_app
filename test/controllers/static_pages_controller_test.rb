@@ -12,7 +12,7 @@ class StaticPagesControllerTest < ActionDispatch::IntegrationTest
     get static_pages_home_url
     assert_response :success
     #titleタグに２つ目の引数の文字列が存在すればOK
-    assert_select "title", "Home | Ruby on Rails Tutorial Sample App" 
+    assert_select "title", "Ruby on Rails Tutorial Sample App" 
   end
 
   test "should get help" do
