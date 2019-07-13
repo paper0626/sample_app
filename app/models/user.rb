@@ -24,7 +24,7 @@ class User < ApplicationRecord
   # passwordのバリデーション
   # has_secure_passwordの存在性のバリデーションは、値を更新するときに適応されないので、
   # presence: true が必要である
-  validates :password, presence: true, length: {minimum: 6}
+  validates :password, presence: true, length: {minimum: 6}, allow_nil: true
   
   # 渡された文字列のハッシュ値を返す
   def self.digest(string)
