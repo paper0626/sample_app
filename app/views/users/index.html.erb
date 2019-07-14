@@ -4,6 +4,8 @@
 <%= will_paginate %>
 
 <ul class="users">
+  <%# @usersをrenderで渡すと、Railsが自動的に個別のuserを認識して
+  _user.html.erbに変数userとして渡す %>
   <%= render @users %>
 </ul>
 

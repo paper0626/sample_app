@@ -27,8 +27,12 @@ Rails.application.configure do
   end
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
-
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.delivery_method = :test
+  # dev環境のhost名を指定する。環境によって変わるので注意
+  # ローカル環境で開発している場合は、localhost:3000
+  host = '3cf0989abeb244c3a46b21035d1fbfdb.vfs.cloud9.ap-southeast-1.amazonaws.com'
+  config.action_mailer.default_url_options = { host: host, protocol: 'https' }
   config.action_mailer.perform_caching = false
 
   # Print deprecation notices to the Rails logger.
