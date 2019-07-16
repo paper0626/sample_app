@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  attr_accessor :remember_token, :activation_token
+  attr_accessor :remember_token, :activation_token, :reset_token
   
   # saveする直前に、emailの文字列を小文字に変換する
   before_save :downcase_email
@@ -74,6 +74,22 @@ class User < ApplicationRecord
     UserMailer.account_activation(self).deliver_now
   end
   
+  # パスワードリセット用のダイジェストを生成
+  def create_reset_digest
+    self.reset_token = User.new_token
+    update_attribute(:reset_digest,  User.digest(reset_token))
+    update_attribute(:reset_sent_at, Time.zone.now)
+  end
+  
+  # パスワードリセットメールを送信
+  def send_password_reset_email
+    UserMailer::password_reset(self).deliver_now
+  end
+  
+  def password_reset_expired?
+    reset_sent_at < 2.hours.ago
+  end
+  
 private
 
   def downcase_email
@@ -86,5 +102,6 @@ private
     self.activation_token = User.new_token
     self.activation_digest = User.digest(activation_token)
   end
+  
 end
 
