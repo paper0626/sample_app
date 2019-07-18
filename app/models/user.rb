@@ -1,30 +1,19 @@
 class User < ApplicationRecord
+  has_many :microposts, dependent: :destroy
   attr_accessor :remember_token, :activation_token, :reset_token
   
-  # saveする直前に、emailの文字列を小文字に変換する
   before_save :downcase_email
-  
-  # Userのインスタンスをcreateする前に、create_activate_digestメソッドを実行する
   before_create :create_activate_digest
   
-  # nameのバリデーション
-  validates :name, presence: true, length: {maximum: 50}
-  
-  # emailのフォーマットに関する正規表現 大文字は定数を意味する
-  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
-  
-  # emailのバリデーション
-  validates :email, presence: true, length: {maximum: 255}, 
-            format: { with: VALID_EMAIL_REGEX}, 
-            uniqueness: { case_sensitive: false}
-            
-  # セキュアなパスワード
   has_secure_password
-  
-  # passwordのバリデーション
   # has_secure_passwordの存在性のバリデーションは、値を更新するときに適応されないので、
   # presence: true が必要である
   validates :password, presence: true, length: {minimum: 6}, allow_nil: true
+  validates :name, presence: true, length: {maximum: 50}
+  VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
+  validates :email, presence: true, length: {maximum: 255}, 
+            format: { with: VALID_EMAIL_REGEX}, 
+            uniqueness: { case_sensitive: false}
   
   # 渡された文字列のハッシュ値を返す
   def self.digest(string)
@@ -90,18 +79,24 @@ class User < ApplicationRecord
     reset_sent_at < 2.hours.ago
   end
   
-private
-
-  def downcase_email
-    # self.email = self.email.downcaseの省略形
-    self.email = email.downcase
+  def feed
+    # ?はSQLインジェクションというセキュリティホールを避けるために必要
+    # SQLクエリに代入する前にidがエスケープされる
+    Micropost.where("user_id=?", id)
   end
-
-  def create_activate_digest
-    # 有効化トークンとダイジェストを作成および代入する
-    self.activation_token = User.new_token
-    self.activation_digest = User.digest(activation_token)
-  end
+  
+    private
+    
+      def downcase_email
+        # self.email = self.email.downcaseの省略形
+        self.email = email.downcase
+      end
+    
+      def create_activate_digest
+        # 有効化トークンとダイジェストを作成および代入する
+        self.activation_token = User.new_token
+        self.activation_digest = User.digest(activation_token)
+      end
   
 end
 
